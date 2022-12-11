@@ -120,16 +120,3 @@ let parse (input: Code list) : Ast list =
         | _ -> ast
                 
     parse' input 0 []
-
- (*
- 
- #load "D:\\Project\\LolChatLang\\Lex\\Reader.fs";
- #load "D:\\Project\\LolChatLang\\Lex\\AST.fs";
- #load "D:\\Project\\LolChatLang\\Lex\\GlobalVariable.fs";
- #load "D:\\Project\\LolChatLang\\Lex\\Parser.fs";
- open AST;
- open GlobalVariable;
- open Parser;
- open Reader;;
- *)
- 

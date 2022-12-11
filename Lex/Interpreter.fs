@@ -4,42 +4,6 @@ open Reader
 open GlobalVariable
 open Parser
 
-(*
-let test = [
-    IF (("우리 정글 딜량", 15),[
-        IFNOT (("상대 미드 딜량", 10), [
-
-        ]); 
-        ASSIGN (ASSIGN_VALUE ("상대 정글 딜량", 20));
-        IF(("우리 킬 다해도", 5),[
-            ASSIGN (ASSIGN_VALUE ("우리 정글 딜량", 20));
-            ASSIGN (ASSIGN_VALUE ("상대 정글 딜량", 20));
-            ASSIGN (ASSIGN_VARIABLE ("시발", "우리 정글 딜량"))]); 
-        BREAK; 
-        GOTO 15]);
-   RETURN "시발"
-];;
-
- #load "D:\\Project\\LolChatLang\\Lex\\Reader.fs";
- #load "D:\\Project\\LolChatLang\\Lex\\AST.fs";
- #load "D:\\Project\\LolChatLang\\Lex\\GlobalVariable.fs";
- #load "D:\\Project\\LolChatLang\\Lex\\Parser.fs";
- open AST;
- open GlobalVariable;
- open Parser;
- open Reader;;
-
- (*
- let code = loadCode "C:\\Users\\dldnj\\Desktop\\새 폴더\\condition.txt"
- 
- let code = loadCode "C:\\Users\\dldnj\\Desktop\\새 폴더\\ccc.txt"
- *)
- 
- let cc = (parse code)
- interpreteAst cc
- finalReturnValue
-*)
-
 let mutable startLine = 0
 let mutable finalReturnValue = 0
 let mutable finishProgram = false
