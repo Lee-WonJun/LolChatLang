@@ -20,12 +20,12 @@ let combinations =
             for variable in variables do
                 ns + " " + subns + " " + variable]
 
-let sumOperatorVariables =
+let sumProperties =
      [for ns in namespaces do
         for variable in variables do
             ns + " " + variable + " 다해도"]
                 
-let substractOperatorVariables =
+let substractProperties =
      [for ns in namespaces do
         for subns in subnamespaces do
             for variable in variables do
@@ -36,8 +36,9 @@ let globalNamespace =
         for subns in subnamespaces do
                 ns + " " + subns]
 
+// append order : long -> short
 let globalVariables = 
-    combinations @ specialVariables @ sumOperatorVariables @ substractOperatorVariables
+    sumProperties @ substractProperties @ combinations @ specialVariables
     
 let toDictionary (map : Map<_, _>) : Dictionary<_, _> = Dictionary(map)
 
@@ -52,26 +53,36 @@ let rec getVariable (variable: string) =
     if List.contains variable (combinations@specialVariables) then
         variableHistory.[variable] |> List.head
         
-    else if List.contains variable substractOperatorVariables then
-        let operand1 = variable.Split(" ")
+    else if List.contains variable substractProperties then
+        let s = variable.Replace("차이","")
+        let operand1 = s.Split(" ")
         let ns = operand1.[0]
         let subns = operand1.[1]
         let var = operand1.[2]
         let inversNs = if ns = "우리" then "상대" else "우리"
         let operand2 = inversNs + " " + subns + " " + var
-        getVariable variable - getVariable operand2
+        getVariable s - getVariable operand2
         
-    else if List.contains variable sumOperatorVariables then
+    else if List.contains variable sumProperties then
         let s = variable.Split(" ")
         let ns = s.[0]
         let variable = s.[1]
         let filter = [for subns in subnamespaces do ns + " " + subns + " " + variable]
-        printfn "%A" filter
         combinations |> List.filter (fun x -> List.contains x filter) |> List.map (fun x -> variableHistory.[x] |> List.head) |> List.sum
         
     else
         0
 
+let getNamespace (variable: string) =
+    let s = variable.Split(" ")
+    let v = s.[2]
+
+    if List.exists (fun x -> x = v) variables then
+       variable.Replace(" ","::")
+    else
+        ""
+    
+    
 let getVariableHistory (variable: string) =
     variableHistory.[variable]
     

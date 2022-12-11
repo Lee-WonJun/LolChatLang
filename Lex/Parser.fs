@@ -17,7 +17,7 @@ let findNamespace(line:string) : VARIABLE option =
     
 let equalConditionParse (line: string) : AST.EQUAL_CONDITION option =
     findVariable line 
-    |> Option.map (fun x -> line.Replace(x, "") |> int |> fun y -> (x, y))
+    |> Option.map (fun x -> line.Replace(x, "")|> int |> fun y -> (x, y))
 
 let returnParse (line: string) =
     let variable = findVariable line 
@@ -29,17 +29,24 @@ let returnParse (line: string) =
             | _ -> None
     else
         None
+
+let consoleOutParse (line:string) = 
+    let variableOut = checkStringStartAndEnd [""] ["보소"; "봐라"] line
+    let reflectionOut = checkStringStartAndEnd ["@ㅐ미"; "@ㅐ비"] [""] line
+    
+    if variableOut then
+        findVariable line |> Option.map (fun x -> CONSOLEOUT(VARIABLE(x)))
+    elif reflectionOut then
+        let reflectionType = if line.StartsWith("@ㅐ미") then REFLECTION_TYPE.NAMESPACE else REFLECTION_TYPE.HISTORY
+        findVariable line |> Option.map (fun x -> CONSOLEOUT(REFLECTION(reflectionType,x)))
+    else
+        None
    
 
 let operatorParse (line:string) =
-    let sumCheck = checkStringStartAndEnd [""] ["다해도"] line
-    let substractCheck = checkStringStartAndEnd [""] ["차이"] line
-    if sumCheck then
-        let variable =  sumOperatorVariables |> List.filter (fun x -> line.Contains(x)) |> List.tryHead
-        variable |> Option.map (fun x -> OPERATOR(SUM, x))
-    else if substractCheck  then
-        let variable =  substractOperatorVariables |> List.filter (fun x -> line.Contains(x)) |> List.tryHead
-        variable |> Option.map (fun x -> OPERATOR(SUBSTRACT, x))
+    let deathCheck = checkStringStartAndEnd [""] ["솔킬 따이네"] line
+    if deathCheck then
+        line.Replace("솔킬 따이네", "") + "데스" |> findVariable |> Option.map (fun x -> OPERATOR(DEATH, x))
     else
         None
 
@@ -100,13 +107,13 @@ let parse (input: Code list) : Ast list =
         | head :: rest when head.Depth = depth ->
             let depthCause =  rest |> List.takeWhile (fun x -> x.Depth >= depth)
             let lazyParseCause = fun () -> parse' depthCause (depth + 1) []
-            let parseOrder = [ifAstParse;assignParse;gotoAstParse;returnParse;operatorParse]
-            let passedParse = parseOrder |> List.tryPick (fun x -> x head.Line) |> Option.defaultValue NOTHIN
+            let parseOrder = [ifAstParse;assignParse;gotoAstParse;returnParse;operatorParse;consoleOutParse]
+            let passedParse = parseOrder |> List.tryPick (fun x -> x head.Line) |> Option.defaultValue NOTHING
             
             match passedParse with
             | IF (condition, _) -> parse' rest depth (ast @ [IF (condition, lazyParseCause())])
             | IFNOT (condition, _) -> parse' rest depth (ast @ [IFNOT (condition, lazyParseCause())])
-            | NOTHIN -> parse' rest depth ast
+            | NOTHING -> parse' rest depth ast
             | _ -> parse' rest depth (ast @ [passedParse])
             
         | head :: rest when head.Depth > depth -> parse' rest depth ast
